@@ -1,103 +1,109 @@
 # Objective: create a map of Steam tags
-#
-# Input:
-#
-# - a json file, downloaded from SteamSpy, named "steamspy.json"
-json_filename = "steamspy.json"
-steamspy_url = "http://steamspy.com/api.php?request=all"
-# NB: If json_filename is missing, the current script will attempt to download and cache it from steamspy_url.
-
-output_filename = "tag_matrix.txt"
-
-import json
 
 import numpy as np
 from sklearn.manifold import TSNE
 
-import pylab as pl
-import math
-
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 
-with open(json_filename, 'r', encoding="utf8") as in_json_file:
-    data = json.load(in_json_file)
+from download_json import downloadSteamSpyData
 
+# SteamSpy's data in JSON format
+data = downloadSteamSpyData()
+
+# Create a set of all Steam tags
 tags = set()
 
-for key in data.keys():
-    current_tags = set(data[key]['tags'])
+for game in data.keys():
+    current_tags = set(data[game]['tags'])
     tags = tags.union(current_tags)
-
-str = "rogue"
-
-for tag in tags:
-    if str in tag:
-        print(tag)
 
 num_tags = len(tags)
 print("#tags = %d" % num_tags)
 
+# Print tags containing the word "rogue"
+wordToSearch = "rogue"
+wordToSearch = wordToSearch.lower()
+
+for tag in tags:
+    tag_str = str(tag).lower()
+    if wordToSearch in tag_str:
+        print(tag)
+
+# Create a list of tags sorted in lexicographical order
 tags_list = list(tags)
 tags_list.sort()
 
-tags_adjacency_matrix = np.zeros([num_tags, num_tags])
-tag_counter_list = np.zeros(num_tags)
+# Define a list of tags to display in bold
+chosen_tags_set = set(["Visual Novel", "Anime", "VR", "Free to Play", "Rogue-lite", "Rogue-like", "Early Access",
+                       "Trading Card Game", "Card Game", "Gore", "Violent", "Sexual Content", "Nudity"])
 
-for key in data.keys():
-    current_tags = list(data[key]['tags'])
+for tag in chosen_tags_set.difference(tags):
+    print("Tag " + tag + " is not used for any game.")
 
-    for index_i in range(len(current_tags)):
-        i = tags_list.index(current_tags[index_i])
-        # tags_adjacency_matrix[i][i] += 1
-        tag_counter_list[i] += 1
-        for index_j in range(index_i+1, len(current_tags)):
-            j = tags_list.index(current_tags[index_j])
-            tags_adjacency_matrix[i][j] += 1
-            tags_adjacency_matrix[j][i] += 1
+chosen_tags_set = chosen_tags_set.intersection(tags)
 
-# Save the matrix to a text file
-# np.savetxt(output_filename, tags_adjacency_matrix, fmt='%d', header=",".join(tags_list))
+isChosenTag = [bool(tag in chosen_tags_set) for tag in tags_list]
 
-# tags_adjacency_matrix = np.loadtxt(output_filename)
+# Create an adjacency matrix (symmetric with zeros on the diagonal)
+tags_adjacency_matrix_filename = "tags_adjacency_matrix.txt"
 
+try:
+    # Load the matrix from a text file
+    tags_adjacency_matrix = np.loadtxt(tags_adjacency_matrix_filename)
+
+except FileNotFoundError:
+    tags_adjacency_matrix = np.zeros([num_tags, num_tags])
+
+    for game in data.keys():
+        current_tags = list(data[game]['tags'])
+
+        for index_i in range(len(current_tags)):
+            i = tags_list.index(current_tags[index_i])
+
+            for index_j in range(index_i+1, len(current_tags)):
+                j = tags_list.index(current_tags[index_j])
+
+                tags_adjacency_matrix[i][j] += 1
+                tags_adjacency_matrix[j][i] += 1
+
+    # Save the matrix to a text file
+    np.savetxt(tags_adjacency_matrix_filename, tags_adjacency_matrix, fmt='%d', header=",".join(tags_list))
+
+# Compute the mapping ussing t-SNE
+# Reference: http://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
 model = TSNE(n_components=2, random_state=0)
-X = model.fit_transform(tags_adjacency_matrix)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-
-chosen_tags_list = ["Visual Novel", "Anime", "VR", "Free to Play", "Rogue-lite", "Rogue-like", "Early Access", "Trading Card Game", "Card Game", "Sexual Content", "Gore", "Violent", "Nudity"]
-
-isChosenTag = []
-for tag in tags_list:
-    if tag in chosen_tags_list:
-        isChosenTag.append(True)
-    else:
-        isChosenTag.append(False)
+X = model.fit_transform(tags_adjacency_matrix)
 
 # Scale and visualize the embedding vectors
-def plot_embedding(X, str_list, title=None):
+def plot_embedding(X, str_list, title=None, delta_font=pow(10, -3)):
     x_min, x_max = np.min(X, 0), np.max(X, 0)
     X = (X - x_min) / (x_max - x_min)
 
     plt.figure()
+
     plt.scatter(X[:, 0], X[:, 1])
 
-    delta = 0.001
     for i in range(X.shape[0]):
-        my_color = "black"
-        my_font_size = "xx-small"
-        my_weight = 'ultralight'
-        my_stretch = "ultra-condensed"
+
         if isChosenTag[i]:
             my_color = "red"
             my_font_size = "small"
             my_weight = 'normal'
             my_stretch = "condensed"
-        plt.text(X[i, 0] + delta, X[i, 1] + delta, str_list[i], color=my_color, fontdict={'family': 'monospace', 'weight': my_weight, 'size': my_font_size, 'stretch': my_stretch})
+        else:
+            my_color = "black"
+            my_font_size = "xx-small"
+            my_weight = 'ultralight'
+            my_stretch = "ultra-condensed"
+
+        plt.text(X[i, 0] + delta_font, X[i, 1] + delta_font, str_list[i], color=my_color,
+                 fontdict={'family': 'monospace', 'weight': my_weight, 'size': my_font_size, 'stretch': my_stretch})
 
     plt.xticks([]), plt.yticks([])
     if title is not None:
         plt.title(title)
+    plt.show()
 
-plot_embedding(X, tags_list, "Steam tags")
-
-plt.show()
+# Display
+my_title = "Steam tags"
+plot_embedding(X, tags_list, my_title)
