@@ -33,3 +33,8 @@ Scikit-learn and Matplotlib are also required, to compute and display the mappin
 ## Results ##
 * [a NeoGAF post](http://www.neogaf.com/forum/showpost.php?p=242575674&postcount=7426) showing the map of tags.
 
+Overview:
+![Map of Steam tags](http://i.imgur.com/O2vwzoy.png "Map of Steam tags")
+
+Zoom in:
+![Zoom on Visual Novel](http://i.imgur.com/tD5yZQ7.png "Zoom on Visual Novel")
