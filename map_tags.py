@@ -53,19 +53,25 @@ isChosenTag = [bool(tag in chosen_tags_set) for tag in tags_list]
 
 # Create an adjacency matrix (symmetric with zeros on the diagonal)
 tags_adjacency_matrix_filename = "tags_adjacency_matrix.txt"
+tags_counter_filename = "tags_counter.txt"
 
 try:
     # Load the matrix from a text file
     tags_adjacency_matrix = np.loadtxt(tags_adjacency_matrix_filename)
 
+    # Load the counter list from a text file
+    tags_counter = np.loadtxt(tags_counter_filename)
+
 except FileNotFoundError:
     tags_adjacency_matrix = np.zeros([num_tags, num_tags])
+    tags_counter = np.zeros(num_tags)
 
     for appid in data.keys():
         current_tags = list(data[appid]['tags'])
 
         for index_i in range(len(current_tags)):
             i = tags_list.index(current_tags[index_i])
+            tags_counter[i] += 1
 
             for index_j in range(index_i+1, len(current_tags)):
                 j = tags_list.index(current_tags[index_j])
@@ -75,6 +81,8 @@ except FileNotFoundError:
 
     # Save the matrix to a text file
     np.savetxt(tags_adjacency_matrix_filename, tags_adjacency_matrix, fmt='%d', header=",".join(tags_list))
+    # Save the counter list to a text file
+    np.savetxt(tags_counter_filename, tags_counter, fmt='%d', header=",".join(tags_list))
 
 # Normalize the pairwise similarity matrix, but only after the text file was saved so that integers are saved of floats.
 # Reference: "Can I use a pairwise similarity matrix as input into t-SNE?" in http://lvdmaaten.github.io/tsne/
@@ -160,6 +168,18 @@ def plot_embedding(X, str_list, title=None, delta_font=pow(10, -3)):
     if title is not None:
         plt.title(title)
     plt.show()
+
+# Trim the display based on different counters
+
+tags_counter /= tags_counter.sum()
+assert(len(tags_counter) == num_tags)
+# NB: tags_counter gives the #occurences of each tag
+
+links_counter = np.sum(tags_adjacency_matrix, axis=1) / tags_adjacency_matrix.sum()
+assert( len(links_counter) == num_tags)
+# NB: links_counter_list gives the number of links between a tag and every other given tag
+
+tags_statistics = [(i,j,k) for (i,j,k) in zip(tags, tags_counter, links_counter)]
 
 # Display
 my_title = "Map of Steam tags"
