@@ -10,11 +10,14 @@ from download_json import downloadSteamSpyData
 # SteamSpy's data in JSON format
 data = downloadSteamSpyData()
 
+num_games = len(data.keys())
+print("#games = %d" % num_games)
+
 # Create a set of all Steam tags
 tags = set()
 
-for game in data.keys():
-    current_tags = set(data[game]['tags'])
+for appid in data.keys():
+    current_tags = set(data[appid]['tags'])
     tags = tags.union(current_tags)
 
 num_tags = len(tags)
@@ -54,8 +57,8 @@ try:
 except FileNotFoundError:
     tags_adjacency_matrix = np.zeros([num_tags, num_tags])
 
-    for game in data.keys():
-        current_tags = list(data[game]['tags'])
+    for appid in data.keys():
+        current_tags = list(data[appid]['tags'])
 
         for index_i in range(len(current_tags)):
             i = tags_list.index(current_tags[index_i])
@@ -68,6 +71,31 @@ except FileNotFoundError:
 
     # Save the matrix to a text file
     np.savetxt(tags_adjacency_matrix_filename, tags_adjacency_matrix, fmt='%d', header=",".join(tags_list))
+
+# Create tag-joint-game matrix (tags in lines, games in columns)
+tag_joint_game_matrix_filename = "tag_joint_game_matrix.txt"
+
+try:
+    # Load the matrix from a text file
+    tag_joint_game_matrix = np.loadtxt(tag_joint_game_matrix_filename)
+
+except FileNotFoundError:
+    tag_joint_game_matrix = np.zeros([num_tags, num_games])
+
+    game_counter = 0
+
+    for appid in data.keys():
+        current_tags = list(data[appid]['tags'])
+
+        for tag in current_tags:
+            i = tags_list.index(tag)
+            j = game_counter
+            tag_joint_game_matrix[i][j] += 1
+
+        game_counter += 1
+
+    # Save the matrix to a text file
+    np.savetxt(tag_joint_game_matrix_filename, tag_joint_game_matrix, fmt='%d')
 
 # Compute the mapping ussing t-SNE
 # Reference: http://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
