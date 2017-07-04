@@ -175,14 +175,12 @@ def plot_embedding(X, str_list, title=None, delta_font= 0.003):
 
         if label in chosen_tags_set:
             my_color = "red"
-            my_font_size = "small"
-            my_weight = 'normal'
-            my_stretch = "condensed"
         else:
             my_color = "black"
-            my_font_size = "xx-small"
-            my_weight = 'ultralight'
-            my_stretch = "ultra-condensed"
+            
+        my_font_size = "medium"
+        my_weight = 'normal'
+        my_stretch = "condensed"
 
         plt.text(x, y, label, color=my_color,
                  horizontalalignment=horizontalalignment,
