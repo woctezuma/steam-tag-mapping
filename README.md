@@ -31,5 +31,5 @@ Scikit-learn and Matplotlib are also required, to compute and display the mappin
 2. `map_tags.py` creates the mapping by analyzing the joint occurences of tags for each game.
 
 ## Results ##
-* [a NeoGAF post](http://www.neogaf.com/forum/showpost.php?p=242518836&postcount=7182) showing the map of tags.
+* [a NeoGAF post](http://www.neogaf.com/forum/showpost.php?p=242575674&postcount=7426) showing the map of tags.
 
