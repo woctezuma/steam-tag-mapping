@@ -11,6 +11,9 @@ from download_json import downloadSteamSpyData
 # Boolean to decide whether to map the tags based on the input data directly, or based on an intermediate step with a similarity matrix
 use_data_directly_as_input = True
 
+# Boolean to decide whether to trim out the most common and most rare tags when displaying the map
+perform_trimming = True
+
 # SteamSpy's data in JSON format
 data = downloadSteamSpyData()
 
@@ -177,7 +180,7 @@ def plot_embedding(X, str_list, title=None, delta_font= 0.003):
             my_color = "red"
         else:
             my_color = "black"
-            
+
         my_font_size = "medium"
         my_weight = 'normal'
         my_stretch = "condensed"
@@ -226,11 +229,13 @@ rare_tags = [v[0] for v in tags_statistics if bool(v[1] >=  high_q)]
 isTagGood = [not((tag in common_tags) or (tag in rare_tags)) for tag in tags_list]
 
 # Perform the trimming
-# X_trimmed = X
-X_trimmed = np.array([list(X[val,:]) for is_good, val in zip(isTagGood, range(X.shape[0])) if is_good])
 
-# tags_list_trimmed = tags_list
-tags_list_trimmed = [val for is_good, val in zip(isTagGood, tags_list) if is_good]
+if perform_trimming:
+    X_trimmed = np.array([list(X[val,:]) for is_good, val in zip(isTagGood, range(X.shape[0])) if is_good])
+    tags_list_trimmed = [val for is_good, val in zip(isTagGood, tags_list) if is_good]
+else:
+    X_trimmed = X
+    tags_list_trimmed = tags_list
 
 # Display
 my_title = "Map of Steam tags"
