@@ -1,11 +1,15 @@
 # Objective: create a map of Steam tags
 
 import numpy as np
+from sklearn.decomposition import TruncatedSVD
 from sklearn.manifold import TSNE
 
 import matplotlib.pyplot as plt
 
 from download_json import downloadSteamSpyData
+
+# Boolean to decide whether to map the tags based on the input data directly, or based on an intermediate step with a similarity matrix
+use_data_directly_as_input = True
 
 # SteamSpy's data in JSON format
 data = downloadSteamSpyData()
@@ -72,6 +76,10 @@ except FileNotFoundError:
     # Save the matrix to a text file
     np.savetxt(tags_adjacency_matrix_filename, tags_adjacency_matrix, fmt='%d', header=",".join(tags_list))
 
+# Normalize the pairwise similarity matrix, but only after the text file was saved so that integers are saved of floats.
+# Reference: "Can I use a pairwise similarity matrix as input into t-SNE?" in http://lvdmaaten.github.io/tsne/
+tags_adjacency_matrix /= tags_adjacency_matrix.sum()
+
 # Create tag-joint-game matrix (tags in lines, games in columns)
 tag_joint_game_matrix_filename = "tag_joint_game_matrix.txt"
 
@@ -97,10 +105,31 @@ except FileNotFoundError:
     # Save the matrix to a text file
     np.savetxt(tag_joint_game_matrix_filename, tag_joint_game_matrix, fmt='%d')
 
-# Compute the mapping ussing t-SNE
-# Reference: http://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
-model = TSNE(n_components=2, random_state=0)
-X = model.fit_transform(tags_adjacency_matrix)
+# Compute the mapping of Steam tags using t-SNE
+# Reference: http://scikit-learn.org/stable/modules/manifold.html#t-distributed-stochastic-neighbor-embedding-t-sne
+
+num_components_svd = 50
+num_components_tsne = 2
+
+svd = TruncatedSVD(n_components=num_components_svd, random_state=0)
+
+# We have chosen a learning rate lower than the default (1000) so that the error decreases during the early iterations:
+tsne = TSNE(n_components=num_components_tsne, random_state=0, verbose=2, learning_rate=400, perplexity=25)
+
+if use_data_directly_as_input:
+    # Either directly use the matrix joining tag and game, in 2 steps:
+
+    # 1st step: reduce the dimensionality of the input SPARSE matrix, with TruncatedSVD as suggested in:
+    # http://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
+    reduced_matrix = svd.fit_transform(tag_joint_game_matrix)
+
+    # 2nd step: apply t-SNE to the reduced DENSE matrix
+    X = tsne.fit_transform(reduced_matrix)
+
+else:
+    # Or use the pairwise similarity matrix (yes, you can do that too):
+    # Reference: http://lvdmaaten.github.io/tsne/
+    X = tsne.fit_transform(tags_adjacency_matrix)
 
 # Scale and visualize the embedding vectors
 def plot_embedding(X, str_list, title=None, delta_font=pow(10, -3)):
@@ -133,5 +162,5 @@ def plot_embedding(X, str_list, title=None, delta_font=pow(10, -3)):
     plt.show()
 
 # Display
-my_title = "Steam tags"
+my_title = "Map of Steam tags"
 plot_embedding(X, tags_list, my_title)
