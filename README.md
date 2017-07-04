@@ -19,10 +19,12 @@ The data is included along the code in this repository, as downloaded on June 30
 
 This code is written in Python 3.
 
-[NumPy](http://www.numpy.org/) and [SciPy](https://www.scipy.org/) is required for an optimization procedure (which can be skipped if you manually input a value for the parameter `alpha`).
+[NumPy](http://www.numpy.org/) and [SciPy](https://www.scipy.org/) are required.
 To install these on Windows, I suggest you download the binaries linked to the Intel® Math Kernel Library:
 * [NumPy](http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy)
 * [SciPy](http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy)
+
+Scikit-learn and Matplotlib are also required, to compute and display the mapping.
 
 ## Usage ##
 1. `download_json.py` downloads data from SteamSpy,
