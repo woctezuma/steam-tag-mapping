@@ -2,7 +2,7 @@
 
 import urllib.request, json
 
-def downloadSteamSpyData(json_filename):
+def downloadSteamSpyData(json_filename = "steamspy.json"):
 
     # If json_filename is missing, we will attempt to download and cache it from steamspy_url:
     steamspy_url = "http://steamspy.com/api.php?request=all"
@@ -26,7 +26,7 @@ def downloadSteamSpyData(json_filename):
             with open(json_filename, 'w', encoding="utf8") as cache_json_file:
                 print(jsonString, file=cache_json_file)
 
-if __name__ == "__main__":
-    output_filename = "steamspy.json"
-    downloadSteamSpyData(output_filename)
+    return data
 
+if __name__ == "__main__":
+    data = downloadSteamSpyData()
