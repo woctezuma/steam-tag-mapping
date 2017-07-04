@@ -49,8 +49,6 @@ for tag in chosen_tags_set.difference(tags):
 
 chosen_tags_set = chosen_tags_set.intersection(tags)
 
-isChosenTag = [bool(tag in chosen_tags_set) for tag in tags_list]
-
 # Create an adjacency matrix (symmetric with zeros on the diagonal)
 tags_adjacency_matrix_filename = "tags_adjacency_matrix.txt"
 tags_counter_filename = "tags_counter.txt"
@@ -140,7 +138,7 @@ else:
     X = tsne.fit_transform(tags_adjacency_matrix)
 
 # Scale and visualize the embedding vectors
-def plot_embedding(X, str_list, title=None, delta_font=pow(10, -3)):
+def plot_embedding(X, str_list, title=None, delta_font= 0.003):
     x_min, x_max = np.min(X, 0), np.max(X, 0)
     X = (X - x_min) / (x_max - x_min)
 
@@ -148,9 +146,34 @@ def plot_embedding(X, str_list, title=None, delta_font=pow(10, -3)):
 
     plt.scatter(X[:, 0], X[:, 1])
 
-    for i in range(X.shape[0]):
+    # Add a label to each node. The challenge here is that we want to
+    # position the labels to avoid overlap with other labels
+    # References:
+    # * https://stackoverflow.com/a/40729950/
+    # * http://scikit-learn.org/stable/auto_examples/applications/plot_stock_market.html
+    for index, (label, x, y) in enumerate(
+            zip(str_list, X[:,0], X[:,1])):
 
-        if isChosenTag[i]:
+        dx = x - X[:,0]
+        dx[index] = 1
+        dy = y - X[:,1]
+        dy[index] = 1
+        this_dx = dx[np.argmin(np.abs(dy))]
+        this_dy = dy[np.argmin(np.abs(dx))]
+        if this_dx > 0:
+            horizontalalignment = 'left'
+            x = x + delta_font
+        else:
+            horizontalalignment = 'right'
+            x = x - delta_font
+        if this_dy > 0:
+            verticalalignment = 'bottom'
+            y = y + delta_font
+        else:
+            verticalalignment = 'top'
+            y = y - delta_font
+
+        if label in chosen_tags_set:
             my_color = "red"
             my_font_size = "small"
             my_weight = 'normal'
@@ -161,7 +184,9 @@ def plot_embedding(X, str_list, title=None, delta_font=pow(10, -3)):
             my_weight = 'ultralight'
             my_stretch = "ultra-condensed"
 
-        plt.text(X[i, 0] + delta_font, X[i, 1] + delta_font, str_list[i], color=my_color,
+        plt.text(x, y, label, color=my_color,
+                 horizontalalignment=horizontalalignment,
+                 verticalalignment=verticalalignment,
                  fontdict={'family': 'monospace', 'weight': my_weight, 'size': my_font_size, 'stretch': my_stretch})
 
     plt.xticks([]), plt.yticks([])
@@ -169,7 +194,7 @@ def plot_embedding(X, str_list, title=None, delta_font=pow(10, -3)):
         plt.title(title)
     plt.show()
 
-# Trim the display based on different counters
+# Trim the data based on different counters, for better display
 
 tags_counter /= tags_counter.sum()
 assert(len(tags_counter) == num_tags)
@@ -179,8 +204,36 @@ links_counter = np.sum(tags_adjacency_matrix, axis=1) / tags_adjacency_matrix.su
 assert( len(links_counter) == num_tags)
 # NB: links_counter_list gives the number of links between a tag and every other given tag
 
+# Aggregate overall statistics regarding tags
 tags_statistics = [(i,j,k) for (i,j,k) in zip(tags, tags_counter, links_counter)]
+
+# Compute percentiles
+
+prct = 7
+while np.percentile(tags_counter, prct) > np.min([tags_counter[i] for i in range(len(tags_list)) if tags_list[i] in chosen_tags_set]):
+    prct -= 1
+prct -= 1
+low_q = np.percentile(tags_counter, prct)
+print("Low percentile for %d" % prct)
+
+prct = 90
+while np.percentile(tags_counter, prct) < np.max([tags_counter[i] for i in range(len(tags_list)) if tags_list[i] in chosen_tags_set]):
+    prct += 1
+prct += 1
+high_q = np.percentile(tags_counter, prct)
+print("High percentile for %d" % prct)
+
+common_tags = [v[0] for v in tags_statistics if bool(v[1] <= low_q )]
+rare_tags = [v[0] for v in tags_statistics if bool(v[1] >=  high_q)]
+isTagGood = [not((tag in common_tags) or (tag in rare_tags)) for tag in tags_list]
+
+# Perform the trimming
+# X_trimmed = X
+X_trimmed = np.array([list(X[val,:]) for is_good, val in zip(isTagGood, range(X.shape[0])) if is_good])
+
+# tags_list_trimmed = tags_list
+tags_list_trimmed = [val for is_good, val in zip(isTagGood, tags_list) if is_good]
 
 # Display
 my_title = "Map of Steam tags"
-plot_embedding(X, tags_list, my_title)
+plot_embedding(X_trimmed, tags_list_trimmed, my_title)
