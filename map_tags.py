@@ -23,9 +23,20 @@ print("#games = %d" % num_games)
 # Create a set of all Steam tags
 tags = set()
 
-for appid in data.keys():
-    current_tags = set(data[appid]['tags'])
-    tags = tags.union(current_tags)
+wordToSearchA = "Metroidvania"
+wordToSearchB = "e-sports"
+
+for wordToSearch in [wordToSearchA, wordToSearchB]:
+    print(wordToSearch)
+    for appid in data.keys():
+        current_tags = set([t.lower() for t in data[appid]['tags']])
+        tags = tags.union(current_tags)
+        d = data[appid]
+        width = 50
+        game_name = d['name']
+        game_name_fixed_width = f'{game_name: <{width}}'
+        if (wordToSearch.lower() in current_tags):
+            print(game_name_fixed_width + "\t" + ", ".join(sorted(d['tags'])))
 
 num_tags = len(tags)
 print("#tags = %d" % num_tags)
