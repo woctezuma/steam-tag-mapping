@@ -23,20 +23,63 @@ print("#games = %d" % num_games)
 # Create a set of all Steam tags
 tags = set()
 
+for appid in data.keys():
+    current_tags = set([t.lower() for t in data[appid]['tags']])
+    tags = tags.union(current_tags)
+
+# Analyze the correlation between Metroidvania and e-sports
+
 wordToSearchA = "Metroidvania"
 wordToSearchB = "e-sports"
+width = 50
+
+meta_dict = {}
+for wordToSearch in [wordToSearchA, wordToSearchB]:
+    print(wordToSearch)
+
+    stats = {}
+    for appid in data.keys():
+        current_tags = set([t.lower() for t in data[appid]['tags']])
+        game_name = data[appid]['name']
+        game_name_fixed_width = f'{game_name: <{width}}'
+
+        if (wordToSearch.lower() in current_tags):
+            print(game_name_fixed_width + "\t" + ", ".join(sorted(data[appid]['tags'])))
+            for t in current_tags:
+                try:
+                    stats[t] += 1
+                except:
+                    stats[t] = 1
+
+    meta_dict[wordToSearch] = stats
+
+    counted_tags = list(stats.keys())
+    tags_counters = [stats[k] for k in counted_tags]
+
+    sorted_counted_tags = sorted(counted_tags, key = lambda x: tags_counters[counted_tags.index(x)], reverse=True)
+    sorted_tags_counters = sorted(tags_counters, reverse=True)
+    print([(i,j) for i,j in zip(sorted_counted_tags,sorted_tags_counters)])
+
+# Find tags common to "Metroidvania" and "e-sports"
+
+tags_in_common = sorted(list( set( meta_dict[wordToSearchA].keys()).intersection(meta_dict[wordToSearchB].keys()) ))
+print( " ; ".join(tags_in_common) )
 
 for wordToSearch in [wordToSearchA, wordToSearchB]:
     print(wordToSearch)
-    for appid in data.keys():
-        current_tags = set([t.lower() for t in data[appid]['tags']])
-        tags = tags.union(current_tags)
-        d = data[appid]
-        width = 50
-        game_name = d['name']
-        game_name_fixed_width = f'{game_name: <{width}}'
-        if (wordToSearch.lower() in current_tags):
-            print(game_name_fixed_width + "\t" + ", ".join(sorted(d['tags'])))
+
+    stats = meta_dict[wordToSearch]
+    num_games_tagged = stats[wordToSearch.lower()]
+
+    counted_tags = list(tags_in_common)
+    tags_counters = [stats[k] for k in counted_tags]
+
+    sorted_counted_tags = sorted(counted_tags, key=lambda x: tags_counters[counted_tags.index(x)], reverse=True)
+    sorted_tags_counters = sorted(tags_counters, reverse=True)
+    # Print frequency of occurences
+    print([(i, int(np.ceil(float(j)/num_games_tagged*100))) for i, j in zip(sorted_counted_tags, sorted_tags_counters)])
+
+# Find the tags containing the word "rogue" (for a test)
 
 num_tags = len(tags)
 print("#tags = %d" % num_tags)
