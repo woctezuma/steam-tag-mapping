@@ -2,6 +2,8 @@
 
 from download_json import downloadSteamSpyData
 
+base_steam_store_url = "http://store.steampowered.com/app/"
+
 # SteamSpy's data in JSON format
 data = downloadSteamSpyData()
 
@@ -17,7 +19,7 @@ appid_list = []
 
 # During peak:
 ccu_threshold = pow(10,3)
-num_hours_during_which_ccu_peak_reached = 1
+num_hours_during_which_ccu_peak_reached = 0
 # Off-peak:
 num_players_off_peak = 0.01 * ccu_threshold
 num_hours_off_peak = 24 - num_hours_during_which_ccu_peak_reached
@@ -42,7 +44,13 @@ for appid_int in appid_list:
     appid = str(appid_int)
     dico[appid] = data[appid]
 
-print("\n".join([dico[appid]["name"] for appid in sorted( dico.keys(), key=lambda x: dico[x]["players_2weeks"], reverse=True)]))
+counter = 0
+for appid in sorted( dico.keys(), key=lambda x: dico[x]["players_2weeks"], reverse=True):
+    counter += 1
+    gamename = dico[appid]["name"]
+    store_url = base_steam_store_url + str(appid)
+    print(str(counter) + ".\t[" + gamename + "](" + store_url + ")")
+
 
 num_games = len(appid_list)
 print("#games = %d" % num_games)
