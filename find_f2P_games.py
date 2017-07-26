@@ -1,8 +1,11 @@
 # Objective: find free-to-play Steam games which were previously in Early Access behind a paywall
 
 from download_json import downloadSteamSpyData
+from bs4 import BeautifulSoup
+from urllib.request import Request, urlopen
 
 base_steam_store_url = "http://store.steampowered.com/app/"
+base_steamdb_url = "https://steamdb.info/app/"
 
 # SteamSpy's data in JSON format
 data = downloadSteamSpyData()
@@ -51,8 +54,17 @@ for appid in sorted( dico.keys(), key=lambda x: dico[x]["players_2weeks"], rever
     counter += 1
     gamename = dico[appid]["name"]
     store_url = base_steam_store_url + str(appid)
-    print(str(counter) + ".\t[" + gamename + "](" + store_url + ")")
+    steamdb_url = base_steamdb_url + str(appid)
 
+    # req = Request(
+    #     steamdb_url,
+    #     headers={'User-Agent': 'Mozilla/5.0'})
+    # webpage = urlopen(req).read()
+    #
+    # soup = BeautifulSoup(webpage)
+    # print(soup.prettify())
+
+    print(str(counter) + ".\t[" + gamename + "](" + steamdb_url + ")")
 
 num_games = len(appid_list)
 print("#games = %d" % num_games)
