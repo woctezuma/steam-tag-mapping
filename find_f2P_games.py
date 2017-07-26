@@ -14,6 +14,8 @@ print("#games = %d" % num_games)
 tag_to_keep = "Free to Play"
 tag_to_remove = "Early Access"
 
+words_to_ban = ["trial", "2017", "2k17", "2k16"]
+
 # Filter games based on tags
 appid_list = []
 
@@ -31,7 +33,7 @@ for appid in data.keys():
     current_tags = data[appid]['tags']
     if (tag_to_keep in current_tags) and not(tag_to_remove in current_tags):
         gamename = data[appid]['name'].lower().strip()
-        if len(gamename)>1 and not("trial" in gamename):
+        if len(gamename)>1 and not(any(word in gamename for word in words_to_ban )):
             if data[appid]["players_2weeks"]>players_threshold and data[appid]["ccu"]>ccu_threshold:
                 appid_list.append( int(appid) )
 
