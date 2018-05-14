@@ -4,9 +4,13 @@ import matplotlib
 
 matplotlib.use('Agg')
 
+# noinspection PyPep8
 import matplotlib.pyplot as plt
+# noinspection PyPep8
 import numpy as np
+# noinspection PyPep8
 from sklearn.decomposition import TruncatedSVD
+# noinspection PyPep8
 from sklearn.manifold import TSNE
 
 
@@ -288,7 +292,7 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
 
 
 def main():
-    from download_json import downloadSteamSpyData
+    from download_json import download_steam_spy_data
 
     # Whether to map tags based on the input data directly, or based on an intermediate step with a similarity matrix
     use_data_directly_as_input = True
@@ -297,7 +301,7 @@ def main():
     perform_trimming = True
 
     # SteamSpy's data in JSON format
-    data = downloadSteamSpyData()
+    data = download_steam_spy_data()
 
     num_games = len(data.keys())
     print("#games = %d" % num_games)

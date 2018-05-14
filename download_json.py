@@ -4,7 +4,7 @@ import json
 import urllib.request
 
 
-def downloadSteamSpyData(json_filename="steamspy.json"):
+def download_steam_spy_data(json_filename="steamspy.json"):
     # If json_filename is missing, we will attempt to download and cache it from steamspy_url:
     steamspy_url = "http://steamspy.com/api.php?request=all"
 
@@ -24,16 +24,17 @@ def downloadSteamSpyData(json_filename="steamspy.json"):
             data = json.load(response)
             # Make sure the json data is using double quotes instead of single quotes
             # Reference: https://stackoverflow.com/a/8710579/
-            jsonString = json.dumps(data)
+            json_string = json.dumps(data)
             # Cache the json data to a local file
             with open(json_filename, 'w', encoding="utf8") as cache_json_file:
-                print(jsonString, file=cache_json_file)
+                print(json_string, file=cache_json_file)
 
     return data
 
 
 def main():
-    data = downloadSteamSpyData()
+    # noinspection PyUnusedLocal
+    data = download_steam_spy_data()
 
     return True
 
