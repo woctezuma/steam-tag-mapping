@@ -5,6 +5,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 import steamspypi
+import json
 
 # noinspection PyPep8
 import matplotlib.pyplot as plt
@@ -303,10 +304,17 @@ def main():
     # SteamSpy's data in JSON format
     data = steamspypi.load()
 
+    try:
+        tags = get_all_tags(data)
+    except KeyError:
+        # SteamSpy API does not provide tags anymore, so load a database downloaded from the SteamSpy ages ago.
+        with open('steamspy.json', 'r', encoding='utf8') as f:
+            data = json.load(f)
+
+        tags = get_all_tags(data)
+
     num_games = len(data.keys())
     print("#games = %d" % num_games)
-
-    tags = get_all_tags(data)
 
     word_to_search = 'rogue'
     display_tags_containing_specific_word(tags, word_to_search)
