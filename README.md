@@ -12,7 +12,7 @@
   [Codecov]: https://codecov.io/gh/woctezuma/steam-tag-mapping
   [Codecov image]: https://codecov.io/gh/woctezuma/steam-tag-mapping/branch/master/graph/badge.svg
 
-This repository contains code to compute a mapping of Steam tags, based on an analysis of all Steam games and their respective tags.
+This repository allows to compute an embedding of Steam tags, based on all Steam games and their respective tags.
 
 ## Definition ##
 
