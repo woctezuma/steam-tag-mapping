@@ -4,6 +4,8 @@ import matplotlib
 
 matplotlib.use('Agg')
 
+import steamspypi
+
 # noinspection PyPep8
 import matplotlib.pyplot as plt
 # noinspection PyPep8
@@ -292,8 +294,6 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
 
 
 def main():
-    from download_json import download_steam_spy_data
-
     # Whether to map tags based on the input data directly, or based on an intermediate step with a similarity matrix
     use_data_directly_as_input = True
 
@@ -301,7 +301,7 @@ def main():
     perform_trimming = True
 
     # SteamSpy's data in JSON format
-    data = download_steam_spy_data()
+    data = steamspypi.load()
 
     num_games = len(data.keys())
     print("#games = %d" % num_games)
