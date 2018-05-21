@@ -29,18 +29,20 @@ The data is included along the code in this repository, as downloaded on June 30
 
 ## Requirements ##
 
-This code is written in Python 3.
+- Install the latest version of [Python 3.X](https://www.python.org/downloads/).
 
-[NumPy](http://www.numpy.org/) and [SciPy](https://www.scipy.org/) are required.
-To install these on Windows, I suggest you download the binaries linked to the Intel® Math Kernel Library:
-* [NumPy](http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy)
-* [SciPy](http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy)
+- Install the required packages:
 
-Scikit-learn and Matplotlib are also required, to compute and display the mapping.
+```bash
+pip install -r requirements.txt
+```
 
 ## Usage ##
-1. `download_json.py` downloads data from SteamSpy,
-2. `map_tags.py` creates the mapping by analyzing the joint occurences of tags for each game.
+
+To create the mapping by analyzing the joint occurences of tags for each game, run the Python script as follows:
+```bash
+python map_tags.py
+```
 
 ## Results ##
 * [a NeoGAF post](http://www.neogaf.com/forum/showpost.php?p=242575674&postcount=7426) showing the map of tags.
