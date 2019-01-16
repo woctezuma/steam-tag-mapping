@@ -78,8 +78,8 @@ def get_adjacency_matrix(data, tags):
         for appid in data.keys():
             current_tags = list(data[appid]['tags'])
 
-            for index_i in range(len(current_tags)):
-                i = tags_list.index(current_tags[index_i])
+            for (index_i, current_tag_i) in enumerate(current_tags):
+                i = tags_list.index(current_tag_i)
                 tags_counter[i] += 1
 
                 for index_j in range(index_i + 1, len(current_tags)):
