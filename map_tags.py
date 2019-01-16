@@ -229,7 +229,8 @@ def plot_embedding(X, str_list, chosen_tags_set, title=None, delta_font=0.003):
                  verticalalignment=verticalalignment,
                  fontdict={'family': 'monospace', 'weight': my_weight, 'size': my_font_size, 'stretch': my_stretch})
 
-    plt.xticks([]), plt.yticks([])
+    plt.xticks([])
+    plt.yticks([])
     if title is not None:
         plt.title(title)
     plt.show()
