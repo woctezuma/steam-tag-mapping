@@ -244,11 +244,13 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
     tags_list = get_sorted_tags(tags)
 
     tags_counter /= tags_counter.sum()
-    assert (len(tags_counter) == num_tags)
+    if not (len(tags_counter) == num_tags):
+        raise AssertionError()
     # NB: tags_counter gives the #occurences of each tag
 
     links_counter = np.sum(tags_adjacency_matrix, axis=1) / tags_adjacency_matrix.sum()
-    assert (len(links_counter) == num_tags)
+    if not (len(links_counter) == num_tags):
+        raise AssertionError()
     # NB: links_counter_list gives the number of links between a tag and every other given tag
 
     # Aggregate overall statistics regarding tags
