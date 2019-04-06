@@ -4,31 +4,15 @@ import matplotlib
 
 matplotlib.use('Agg')
 
-import steamspypi
-import json
-
 # noinspection PyPep8
 import matplotlib.pyplot as plt
 # noinspection PyPep8
 import numpy as np
+import steamtags
 # noinspection PyPep8
 from sklearn.decomposition import TruncatedSVD
 # noinspection PyPep8
 from sklearn.manifold import TSNE
-
-
-def get_all_tags(data):
-    # Create a set of all Steam tags
-    tags = set()
-
-    for appid in data.keys():
-        current_tags = set(data[appid]['tags'])
-        tags = tags.union(current_tags)
-
-    num_tags = len(tags)
-    print("#tags = %d" % num_tags)
-
-    return tags
 
 
 def display_tags_containing_specific_word(tags, word_to_search='rogue'):
@@ -65,25 +49,23 @@ def get_adjacency_matrix(data, tags):
         # Load the counter list from a text file
         tags_counter = np.loadtxt(tags_counter_filename)
 
-    except FileNotFoundError:
+    except OSError:
         num_tags = len(tags)
 
-        # Create a list of tags sorted in lexicographical order
         tags_list = list(tags)
-        tags_list.sort()
 
         tags_adjacency_matrix = np.zeros([num_tags, num_tags])
         tags_counter = np.zeros(num_tags)
 
         for appid in data.keys():
-            current_tags = list(data[appid]['tags'])
+            current_tags = list(data[appid])
 
-            for (index_i, current_tag_i) in enumerate(current_tags):
-                i = tags_list.index(current_tag_i)
+            for index_i in range(len(current_tags)):
+                i = current_tags[index_i]
                 tags_counter[i] += 1
 
                 for index_j in range(index_i + 1, len(current_tags)):
-                    j = tags_list.index(current_tags[index_j])
+                    j = current_tags[index_j]
 
                     tags_adjacency_matrix[i][j] += 1
                     tags_adjacency_matrix[j][i] += 1
@@ -102,14 +84,6 @@ def get_adjacency_matrix(data, tags):
     return tags_adjacency_matrix, tags_counter
 
 
-def get_sorted_tags(tags):
-    # Create a list of tags sorted in lexicographical order
-    tags_list = list(tags)
-    tags_list.sort()
-
-    return tags_list
-
-
 def get_tag_joint_game_matrix(data, tags):
     # Create tag-joint-game matrix (tags in lines, games in columns)
     tag_joint_game_matrix_filename = "tag_joint_game_matrix.txt"
@@ -118,25 +92,19 @@ def get_tag_joint_game_matrix(data, tags):
         # Load the matrix from a text file
         tag_joint_game_matrix = np.loadtxt(tag_joint_game_matrix_filename)
 
-    except FileNotFoundError:
+    except OSError:
         num_games = len(data.keys())
         num_tags = len(tags)
 
-        tags_list = get_sorted_tags(tags)
-
         tag_joint_game_matrix = np.zeros([num_tags, num_games])
 
-        game_counter = 0
-
-        for appid in data.keys():
-            current_tags = list(data[appid]['tags'])
+        for (game_counter, appid) in enumerate(data.keys()):
+            current_tags = list(data[appid])
 
             for tag in current_tags:
-                i = tags_list.index(tag)
+                i = tag
                 j = game_counter
                 tag_joint_game_matrix[i][j] += 1
-
-            game_counter += 1
 
         # Save the matrix to a text file
         # noinspection PyTypeChecker
@@ -242,7 +210,7 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
 
     num_tags = len(tags)
 
-    tags_list = get_sorted_tags(tags)
+    tags_list = list(tags)
 
     tags_counter /= tags_counter.sum()
     if not (len(tags_counter) == num_tags):
@@ -261,7 +229,7 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
 
     prct = 7
     while np.percentile(tags_counter, prct) > np.min(
-            [tags_counter[i] for i in range(len(tags_list)) if tags_list[i] in chosen_tags_set]):
+            [tags_counter[i] for (i, tag) in enumerate(tags_list) if tag in chosen_tags_set]):
         prct -= 1
     prct -= 1
     low_q = np.percentile(tags_counter, prct)
@@ -269,7 +237,7 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
 
     prct = 90
     while np.percentile(tags_counter, prct) < np.max(
-            [tags_counter[i] for i in range(len(tags_list)) if tags_list[i] in chosen_tags_set]):
+            [tags_counter[i] for (i, tag) in enumerate(tags_list) if tag in chosen_tags_set]):
         prct += 1
     prct += 1
     high_q = np.percentile(tags_counter, prct)
@@ -297,6 +265,37 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
     return
 
 
+def generate_steam_spy_data_with_tags(tags_dict):
+    # Create a set of all Steam appIDs
+
+    app_ids = set()
+    for tag in tags_dict.keys():
+        tagged_app_ids = tags_dict[tag]
+        app_ids.update(tagged_app_ids)
+
+    num_games = len(app_ids)
+    print("#games = {}".format(num_games))
+
+    # Create a set of all Steam tags, sorted in lexicographical order
+
+    tags = set(tags_dict.keys())
+    tags = sorted(tags)  # only for display
+
+    num_tags = len(tags)
+    print("#tags = {}".format(num_tags))
+
+    data = dict()
+
+    for app_id in app_ids:
+        current_tags = [tag_index for (tag_index, tag_str) in enumerate(tags)
+                        if app_id in tags_dict[tag_str]]
+        # NB: tag_index is stored instead of tag_str, because it speeds up the computations.
+
+        data[app_id] = current_tags
+
+    return data, tags
+
+
 def main():
     # Whether to map tags based on the input data directly, or based on an intermediate step with a similarity matrix
     use_data_directly_as_input = True
@@ -304,20 +303,11 @@ def main():
     # Boolean to decide whether to trim out the most common and most rare tags when displaying the map
     perform_trimming = True
 
-    # SteamSpy's data in JSON format
-    data = steamspypi.load()
+    # SteamSpy API does not provide tags by default.
+    _, tags_dict = steamtags.load()
 
-    try:
-        tags = get_all_tags(data)
-    except KeyError:
-        # SteamSpy API does not provide tags anymore, so load a database downloaded from the SteamSpy ages ago.
-        with open('steamspy.json', 'r', encoding='utf8') as f:
-            data = json.load(f)
-
-        tags = get_all_tags(data)
-
-    num_games = len(data.keys())
-    print("#games = %d" % num_games)
+    # Create a structure similar to SteamSpy's data, which includes tags
+    data, tags = generate_steam_spy_data_with_tags(tags_dict)
 
     word_to_search = 'rogue'
     display_tags_containing_specific_word(tags, word_to_search)
