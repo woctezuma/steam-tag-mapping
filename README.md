@@ -20,12 +20,7 @@ A "tag" is a word or expression attached to a game, as can be seen [on Steam](ht
 
 ## Data source ##
 
-The data comes from [SteamSpy API](http://steamspy.com/api.php).
-
-To run the code, you will need:
-* data from SteamSpy: `steamspy.json` (automatically downloaded if the file is missing)
-
-The data is included along the code in this repository, as downloaded on June 30, 2017.
+Data is downloaded from [SteamSpy API](http://steamspy.com/api.php) via the [steamtags](https://github.com/woctezuma/match-steam-tags) PyPI package.
 
 ## Requirements ##
 
