@@ -14,36 +14,37 @@
 
 This repository allows to compute an embedding of Steam tags, based on all Steam games and their respective tags.
 
-## Definition ##
+## Definition
 
 A "tag" is a word or expression attached to a game, as can be seen [on Steam](http://store.steampowered.com//tag/browse).
 
-## Data source ##
+## Data source
 
 Data is downloaded from [SteamSpy API](http://steamspy.com/api.php) via the [steamtags](https://github.com/woctezuma/match-steam-tags) PyPI package.
 
-## Requirements ##
+## Requirements
 
-- Install the latest version of [Python 3.X](https://www.python.org/downloads/).
-
-- Install the required packages:
+-   Install the latest version of [Python 3.X](https://www.python.org/downloads/).
+-   Install the required packages:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Usage ##
+## Usage
 
 To create the mapping by analyzing the joint occurences of tags for each game, run the Python script as follows:
+
 ```bash
 python map_tags.py
 ```
 
-## Results ##
-* [a NeoGAF post](http://www.neogaf.com/forum/showpost.php?p=242575674&postcount=7426) showing the map of tags.
+## Results
 
-Overview:
-![Map of Steam tags](http://i.imgur.com/O2vwzoy.png "Map of Steam tags")
+![Map of Steam tags](https://github.com/woctezuma/steam-tag-mapping/wiki/img/QuUcF85.png)
 
-Zoom in:
-![Zoom on Visual Novel](http://i.imgur.com/tD5yZQ7.png "Zoom on Visual Novel")
+Previous results are shown [on the Wiki](https://github.com/woctezuma/steam-tag-mapping/wiki).
+
+## Reference
+
+-   [a post on NeoGAF](http://www.neogaf.com/forum/showpost.php?p=242575674&postcount=7426) showing the map of tags.
