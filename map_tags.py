@@ -16,7 +16,7 @@ from sklearn.manifold import TSNE
 
 
 def display_tags_containing_specific_word(tags, word_to_search='rogue'):
-    # Print tags containing the word "rogue"
+    # Print tags containing the word 'rogue'
 
     word_to_search = word_to_search.lower()
 
@@ -30,7 +30,7 @@ def display_tags_containing_specific_word(tags, word_to_search='rogue'):
 
 def filter_chosen_tags(chosen_tags_set, tags):
     for tag in chosen_tags_set.difference(tags):
-        print("Tag " + tag + " is not used for any game.")
+        print('Tag {} is not used for any game.'.format(tag))
 
     chosen_tags_set = chosen_tags_set.intersection(tags)
 
@@ -39,8 +39,8 @@ def filter_chosen_tags(chosen_tags_set, tags):
 
 def get_adjacency_matrix(data, tags):
     # Create an adjacency matrix (symmetric with zeros on the diagonal)
-    tags_adjacency_matrix_filename = "tags_adjacency_matrix.txt"
-    tags_counter_filename = "tags_counter.txt"
+    tags_adjacency_matrix_filename = 'tags_adjacency_matrix.txt'
+    tags_counter_filename = 'tags_counter.txt'
 
     try:
         # Load the matrix from a text file
@@ -72,13 +72,13 @@ def get_adjacency_matrix(data, tags):
 
         # Save the matrix to a text file
         # noinspection PyTypeChecker
-        np.savetxt(tags_adjacency_matrix_filename, tags_adjacency_matrix, fmt='%d', header=",".join(tags_list))
+        np.savetxt(tags_adjacency_matrix_filename, tags_adjacency_matrix, fmt='%d', header=','.join(tags_list))
         # Save the counter list to a text file
         # noinspection PyTypeChecker
-        np.savetxt(tags_counter_filename, tags_counter, fmt='%d', header=",".join(tags_list))
+        np.savetxt(tags_counter_filename, tags_counter, fmt='%d', header=','.join(tags_list))
 
     # Normalize the pairwise similarity matrix, but only after the text file was saved so that int are saved, not float.
-    # Reference: "Can I use a pairwise similarity matrix as input into t-SNE?" in http://lvdmaaten.github.io/tsne/
+    # Reference: 'Can I use a pairwise similarity matrix as input into t-SNE?' in http://lvdmaaten.github.io/tsne/
     tags_adjacency_matrix /= tags_adjacency_matrix.sum()
 
     return tags_adjacency_matrix, tags_counter
@@ -86,7 +86,7 @@ def get_adjacency_matrix(data, tags):
 
 def get_tag_joint_game_matrix(data, tags):
     # Create tag-joint-game matrix (tags in lines, games in columns)
-    tag_joint_game_matrix_filename = "tag_joint_game_matrix.txt"
+    tag_joint_game_matrix_filename = 'tag_joint_game_matrix.txt'
 
     try:
         # Load the matrix from a text file
@@ -184,13 +184,13 @@ def plot_embedding(X, str_list, chosen_tags_set, title=None, delta_font=0.003):
             y = y - delta_font
 
         if label in chosen_tags_set:
-            my_color = "red"
+            my_color = 'red'
         else:
-            my_color = "black"
+            my_color = 'black'
 
-        my_font_size = "medium"
+        my_font_size = 'medium'
         my_weight = 'normal'
-        my_stretch = "condensed"
+        my_stretch = 'condensed'
 
         plt.text(x, y, label, color=my_color,
                  horizontalalignment=horizontalalignment,
@@ -233,7 +233,7 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
         prct -= 1
     prct -= 1
     low_q = np.percentile(tags_counter, prct)
-    print("Low percentile for %d" % prct)
+    print('Low percentile for {}'.format(prct))
 
     prct = 90
     while np.percentile(tags_counter, prct) < np.max(
@@ -241,7 +241,7 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
         prct += 1
     prct += 1
     high_q = np.percentile(tags_counter, prct)
-    print("High percentile for %d" % prct)
+    print('High percentile for {}'.format(prct))
 
     common_tags = [v[0] for v in tags_statistics if bool(v[1] <= low_q)]
     rare_tags = [v[0] for v in tags_statistics if bool(v[1] >= high_q)]
@@ -259,7 +259,7 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
         tags_list_trimmed = tags_list
 
     # Display
-    my_title = "Map of Steam tags"
+    my_title = 'Map of Steam tags'
     plot_embedding(X_trimmed, tags_list_trimmed, chosen_tags_set, my_title)
 
     return
@@ -274,7 +274,7 @@ def generate_steam_spy_data_with_tags(tags_dict):
         app_ids.update(tagged_app_ids)
 
     num_games = len(app_ids)
-    print("#games = {}".format(num_games))
+    print('#games = {}'.format(num_games))
 
     # Create a set of all Steam tags, sorted in lexicographical order
 
@@ -282,7 +282,7 @@ def generate_steam_spy_data_with_tags(tags_dict):
     tags = sorted(tags)  # only for display
 
     num_tags = len(tags)
-    print("#tags = {}".format(num_tags))
+    print('#tags = {}'.format(num_tags))
 
     data = dict()
 
@@ -313,8 +313,8 @@ def main():
     display_tags_containing_specific_word(tags, word_to_search)
 
     # Define a list of tags to display in bold
-    chosen_tags_set = {"Visual Novel", "Anime", "VR", "Free to Play", "Rogue-lite", "Rogue-like", "Early Access",
-                       "Trading Card Game", "Card Game", "Gore", "Violent", "Sexual Content", "Nudity"}
+    chosen_tags_set = {'Visual Novel', 'Anime', 'VR', 'Free to Play', 'Rogue-lite', 'Rogue-like', 'Early Access',
+                       'Trading Card Game', 'Card Game', 'Gore', 'Violent', 'Sexual Content', 'Nudity'}
 
     chosen_tags_set = filter_chosen_tags(chosen_tags_set, tags)
 
