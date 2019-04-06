@@ -1,16 +1,10 @@
 # Steam Tag Mapping
 
- [![Build status][Build image]][Build] [![Updates][Dependency image]][PyUp] [![Python 3][Python3 image]][PyUp] [![Code coverage][Codecov image]][Codecov]
-
-  [Build]: https://travis-ci.org/woctezuma/steam-tag-mapping
-  [Build image]: https://travis-ci.org/woctezuma/steam-tag-mapping.svg?branch=master
-
-  [PyUp]: https://pyup.io/repos/github/woctezuma/steam-tag-mapping/
-  [Dependency image]: https://pyup.io/repos/github/woctezuma/steam-tag-mapping/shield.svg
-  [Python3 image]: https://pyup.io/repos/github/woctezuma/steam-tag-mapping/python-3-shield.svg
-
-  [Codecov]: https://codecov.io/gh/woctezuma/steam-tag-mapping
-  [Codecov image]: https://codecov.io/gh/woctezuma/steam-tag-mapping/branch/master/graph/badge.svg
+[![Build status][build-image]][build]
+[![Updates][dependency-image]][pyup]
+[![Python 3][python3-image]][pyup]
+[![Code coverage][codecov-image]][codecov]
+[![Code Quality][codacy-image]][codacy]
 
 This repository allows to compute an embedding of Steam tags, based on all Steam games and their respective tags.
 
@@ -48,3 +42,18 @@ Previous results are shown [on the Wiki](https://github.com/woctezuma/steam-tag-
 ## Reference
 
 -   [a post on NeoGAF](http://www.neogaf.com/forum/showpost.php?p=242575674&postcount=7426) showing the map of tags.
+
+<!-- Definitions -->
+
+[build]: <https://travis-ci.org/woctezuma/steam-tag-mapping>
+[build-image]: <https://travis-ci.org/woctezuma/steam-tag-mapping.svg?branch=master>
+
+[pyup]: <https://pyup.io/repos/github/woctezuma/steam-tag-mapping/>
+[dependency-image]: <https://pyup.io/repos/github/woctezuma/steam-tag-mapping/shield.svg>
+[python3-image]: <https://pyup.io/repos/github/woctezuma/steam-tag-mapping/python-3-shield.svg>
+
+[codecov]: <https://codecov.io/gh/woctezuma/steam-tag-mapping>
+[codecov-image]: <https://codecov.io/gh/woctezuma/steam-tag-mapping/branch/master/graph/badge.svg>
+
+[codacy]: <https://www.codacy.com/app/woctezuma/steam-tag-mapping>
+[codacy-image]: <https://api.codacy.com/project/badge/Grade/ea42bcc3210b442cbc40e4b0e9e016d2>
