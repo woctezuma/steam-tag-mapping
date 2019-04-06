@@ -20,7 +20,7 @@ A "tag" is a word or expression attached to a game, as can be seen [on Steam](ht
 
 ## Data source ##
 
-The data comes from from [SteamSpy API](http://steamspy.com/api.php).
+The data comes from [SteamSpy API](http://steamspy.com/api.php).
 
 To run the code, you will need:
 * data from SteamSpy: `steamspy.json` (automatically downloaded if the file is missing)
