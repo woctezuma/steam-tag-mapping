@@ -171,16 +171,16 @@ def plot_embedding(X, str_list, chosen_tags_set, title=None, delta_font=0.003):
         this_dx = dx[np.argmin(np.abs(dy))]
         this_dy = dy[np.argmin(np.abs(dx))]
         if this_dx > 0:
-            horizontalalignment = 'left'
+            horizontal_alignment = 'left'
             x = x + delta_font
         else:
-            horizontalalignment = 'right'
+            horizontal_alignment = 'right'
             x = x - delta_font
         if this_dy > 0:
-            verticalalignment = 'bottom'
+            vertical_alignment = 'bottom'
             y = y + delta_font
         else:
-            verticalalignment = 'top'
+            vertical_alignment = 'top'
             y = y - delta_font
 
         if label in chosen_tags_set:
@@ -193,8 +193,8 @@ def plot_embedding(X, str_list, chosen_tags_set, title=None, delta_font=0.003):
         my_stretch = 'condensed'
 
         plt.text(x, y, label, color=my_color,
-                 horizontalalignment=horizontalalignment,
-                 verticalalignment=verticalalignment,
+                 horizontalalignment=horizontal_alignment,
+                 verticalalignment=vertical_alignment,
                  fontdict={'family': 'monospace', 'weight': my_weight, 'size': my_font_size, 'stretch': my_stretch})
 
     plt.xticks([])
