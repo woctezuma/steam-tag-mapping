@@ -8,6 +8,8 @@
 
 This repository allows to compute an embedding of Steam tags, based on all Steam games and their respective tags.
 
+![Map of Steam tags](https://github.com/woctezuma/steam-tag-mapping/wiki/img/QuUcF85.png)
+
 ## Definition
 
 A "tag" is a word or expression attached to a game, as can be seen [on Steam](http://store.steampowered.com//tag/browse).
@@ -35,9 +37,7 @@ python map_tags.py
 
 ## Results
 
-![Map of Steam tags](https://github.com/woctezuma/steam-tag-mapping/wiki/img/QuUcF85.png)
-
-Previous results are shown [on the Wiki](https://github.com/woctezuma/steam-tag-mapping/wiki).
+Results are shown [on the Wiki](https://github.com/woctezuma/steam-tag-mapping/wiki).
 
 ## Reference
 
