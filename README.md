@@ -42,6 +42,10 @@ Results are shown [on the Wiki](https://github.com/woctezuma/steam-tag-mapping/w
 ## Reference
 
 -   [a post on NeoGAF](http://www.neogaf.com/forum/showpost.php?p=242575674&postcount=7426) showing the map of tags.
+-   t-SNE:
+    - [author's FAQ][tsne-author]
+    - [wikipedia][tsne-wiki])
+-   [UMAP][umap-code]
 
 <!-- Definitions -->
 
@@ -57,3 +61,7 @@ Results are shown [on the Wiki](https://github.com/woctezuma/steam-tag-mapping/w
 
 [codacy]: <https://www.codacy.com/app/woctezuma/steam-tag-mapping>
 [codacy-image]: <https://api.codacy.com/project/badge/Grade/ea42bcc3210b442cbc40e4b0e9e016d2>
+
+[tsne-author]: <https://lvdmaaten.github.io/tsne/>
+[tsne-wiki]: <https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding>
+[umap-code]: <https://github.com/lmcinnes/umap>
