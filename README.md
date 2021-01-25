@@ -44,7 +44,7 @@ Results are shown [on the Wiki](https://github.com/woctezuma/steam-tag-mapping/w
 -   [a post on NeoGAF](http://www.neogaf.com/forum/showpost.php?p=242575674&postcount=7426) showing the map of tags.
 -   t-SNE:
     - [author's FAQ][tsne-author]
-    - [wikipedia][tsne-wiki])
+    - [wikipedia][tsne-wiki]
 -   [UMAP][umap-code]
 
 <!-- Definitions -->
