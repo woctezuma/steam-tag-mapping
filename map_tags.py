@@ -6,11 +6,14 @@ matplotlib.use('Agg')
 
 # noinspection PyPep8
 import matplotlib.pyplot as plt
+
 # noinspection PyPep8
 import numpy as np
 import steamtags
+
 # noinspection PyPep8
 from sklearn.decomposition import TruncatedSVD
+
 # noinspection PyPep8
 from sklearn.manifold import TSNE
 
@@ -72,10 +75,20 @@ def get_adjacency_matrix(data, tags):
 
         # Save the matrix to a text file
         # noinspection PyTypeChecker
-        np.savetxt(tags_adjacency_matrix_filename, tags_adjacency_matrix, fmt='%d', header=','.join(tags_list))
+        np.savetxt(
+            tags_adjacency_matrix_filename,
+            tags_adjacency_matrix,
+            fmt='%d',
+            header=','.join(tags_list),
+        )
         # Save the counter list to a text file
         # noinspection PyTypeChecker
-        np.savetxt(tags_counter_filename, tags_counter, fmt='%d', header=','.join(tags_list))
+        np.savetxt(
+            tags_counter_filename,
+            tags_counter,
+            fmt='%d',
+            header=','.join(tags_list),
+        )
 
     # Normalize the pairwise similarity matrix, but only after the text file was saved so that int are saved, not float.
     # Reference: 'Can I use a pairwise similarity matrix as input into t-SNE?' in http://lvdmaaten.github.io/tsne/
@@ -98,7 +111,7 @@ def get_tag_joint_game_matrix(data, tags):
 
         tag_joint_game_matrix = np.zeros([num_tags, num_games])
 
-        for (game_counter, appid) in enumerate(data.keys()):
+        for game_counter, appid in enumerate(data.keys()):
             current_tags = list(data[appid])
 
             for tag in current_tags:
@@ -113,7 +126,11 @@ def get_tag_joint_game_matrix(data, tags):
     return tag_joint_game_matrix
 
 
-def compute_tsne_mapping_of_steam_tags(tags_adjacency_matrix, tag_joint_game_matrix, use_data_directly_as_input=True):
+def compute_tsne_mapping_of_steam_tags(
+    tags_adjacency_matrix,
+    tag_joint_game_matrix,
+    use_data_directly_as_input=True,
+):
     # Compute the mapping of Steam tags using t-SNE
     # Reference: http://scikit-learn.org/stable/modules/manifold.html#t-distributed-stochastic-neighbor-embedding-t-sne
 
@@ -123,7 +140,13 @@ def compute_tsne_mapping_of_steam_tags(tags_adjacency_matrix, tag_joint_game_mat
     svd = TruncatedSVD(n_components=num_components_svd, random_state=0)
 
     # We have chosen a learning rate lower than the default (1000) so that the error decreases during early iterations:
-    tsne = TSNE(n_components=num_components_tsne, random_state=0, verbose=2, learning_rate=400, perplexity=25)
+    tsne = TSNE(
+        n_components=num_components_tsne,
+        random_state=0,
+        verbose=2,
+        learning_rate=400,
+        perplexity=25,
+    )
 
     if use_data_directly_as_input:
         # Either directly use the matrix joining tag and game, in 2 steps:
@@ -161,9 +184,7 @@ def plot_embedding(X, str_list, chosen_tags_set, title=None, delta_font=0.003):
     # References:
     # * https://stackoverflow.com/a/40729950/
     # * http://scikit-learn.org/stable/auto_examples/applications/plot_stock_market.html
-    for index, (label, x, y) in enumerate(
-            zip(str_list, X[:, 0], X[:, 1])):
-
+    for index, (label, x, y) in enumerate(zip(str_list, X[:, 0], X[:, 1])):
         dx = x - X[:, 0]
         dx[index] = 1
         dy = y - X[:, 1]
@@ -192,10 +213,20 @@ def plot_embedding(X, str_list, chosen_tags_set, title=None, delta_font=0.003):
         my_weight = 'normal'
         my_stretch = 'condensed'
 
-        plt.text(x, y, label, color=my_color,
-                 horizontalalignment=horizontal_alignment,
-                 verticalalignment=vertical_alignment,
-                 fontdict={'family': 'monospace', 'weight': my_weight, 'size': my_font_size, 'stretch': my_stretch})
+        plt.text(
+            x,
+            y,
+            label,
+            color=my_color,
+            horizontalalignment=horizontal_alignment,
+            verticalalignment=vertical_alignment,
+            fontdict={
+                'family': 'monospace',
+                'weight': my_weight,
+                'size': my_font_size,
+                'stretch': my_stretch,
+            },
+        )
 
     plt.xticks([])
     plt.yticks([])
@@ -205,7 +236,14 @@ def plot_embedding(X, str_list, chosen_tags_set, title=None, delta_font=0.003):
 
 
 # noinspection PyPep8Naming
-def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_counter, perform_trimming):
+def optimize_display(
+    X,
+    chosen_tags_set,
+    tags,
+    tags_adjacency_matrix,
+    tags_counter,
+    perform_trimming,
+):
     # Trim the data based on different counters, for better display
 
     num_tags = len(tags)
@@ -223,13 +261,20 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
     # NB: links_counter_list gives the number of links between a tag and every other given tag
 
     # Aggregate overall statistics regarding tags
-    tags_statistics = [(i, j, k) for (i, j, k) in zip(tags, tags_counter, links_counter)]
+    tags_statistics = [
+        (i, j, k) for (i, j, k) in zip(tags, tags_counter, links_counter)
+    ]
 
     # Compute percentiles
 
     prct = 7
     while np.percentile(tags_counter, prct) > np.min(
-            [tags_counter[i] for (i, tag) in enumerate(tags_list) if tag in chosen_tags_set]):
+        [
+            tags_counter[i]
+            for (i, tag) in enumerate(tags_list)
+            if tag in chosen_tags_set
+        ],
+    ):
         prct -= 1
     prct -= 1
     low_q = np.percentile(tags_counter, prct)
@@ -237,7 +282,12 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
 
     prct = 90
     while np.percentile(tags_counter, prct) < np.max(
-            [tags_counter[i] for (i, tag) in enumerate(tags_list) if tag in chosen_tags_set]):
+        [
+            tags_counter[i]
+            for (i, tag) in enumerate(tags_list)
+            if tag in chosen_tags_set
+        ],
+    ):
         prct += 1
     prct += 1
     high_q = np.percentile(tags_counter, prct)
@@ -245,14 +295,24 @@ def optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_count
 
     common_tags = [v[0] for v in tags_statistics if bool(v[1] <= low_q)]
     rare_tags = [v[0] for v in tags_statistics if bool(v[1] >= high_q)]
-    is_tag_good = [not ((tag in common_tags) or (tag in rare_tags)) for tag in tags_list]
+    is_tag_good = [
+        not ((tag in common_tags) or (tag in rare_tags)) for tag in tags_list
+    ]
 
     # Perform the trimming
 
     if perform_trimming:
         # noinspection PyPep8Naming
-        X_trimmed = np.array([list(X[val, :]) for is_good, val in zip(is_tag_good, range(X.shape[0])) if is_good])
-        tags_list_trimmed = [val for is_good, val in zip(is_tag_good, tags_list) if is_good]
+        X_trimmed = np.array(
+            [
+                list(X[val, :])
+                for is_good, val in zip(is_tag_good, range(X.shape[0]))
+                if is_good
+            ],
+        )
+        tags_list_trimmed = [
+            val for is_good, val in zip(is_tag_good, tags_list) if is_good
+        ]
     else:
         # noinspection PyPep8Naming
         X_trimmed = X
@@ -287,8 +347,11 @@ def generate_steam_spy_data_with_tags(tags_dict):
     data = dict()
 
     for app_id in app_ids:
-        current_tags = [tag_index for (tag_index, tag_str) in enumerate(tags)
-                        if app_id in tags_dict[tag_str]]
+        current_tags = [
+            tag_index
+            for (tag_index, tag_str) in enumerate(tags)
+            if app_id in tags_dict[tag_str]
+        ]
         # NB: tag_index is stored instead of tag_str, because it speeds up the computations.
 
         data[app_id] = current_tags
@@ -313,8 +376,21 @@ def main():
     display_tags_containing_specific_word(tags, word_to_search)
 
     # Define a list of tags to display in bold
-    chosen_tags_set = {'Visual Novel', 'Anime', 'VR', 'Free to Play', 'Rogue-lite', 'Rogue-like', 'Early Access',
-                       'Trading Card Game', 'Card Game', 'Gore', 'Violent', 'Sexual Content', 'Nudity'}
+    chosen_tags_set = {
+        'Visual Novel',
+        'Anime',
+        'VR',
+        'Free to Play',
+        'Rogue-lite',
+        'Rogue-like',
+        'Early Access',
+        'Trading Card Game',
+        'Card Game',
+        'Gore',
+        'Violent',
+        'Sexual Content',
+        'Nudity',
+    }
 
     chosen_tags_set = filter_chosen_tags(chosen_tags_set, tags)
 
@@ -326,9 +402,20 @@ def main():
         tag_joint_game_matrix = None
 
     # noinspection PyPep8Naming
-    X = compute_tsne_mapping_of_steam_tags(tags_adjacency_matrix, tag_joint_game_matrix, use_data_directly_as_input)
+    X = compute_tsne_mapping_of_steam_tags(
+        tags_adjacency_matrix,
+        tag_joint_game_matrix,
+        use_data_directly_as_input,
+    )
 
-    optimize_display(X, chosen_tags_set, tags, tags_adjacency_matrix, tags_counter, perform_trimming)
+    optimize_display(
+        X,
+        chosen_tags_set,
+        tags,
+        tags_adjacency_matrix,
+        tags_counter,
+        perform_trimming,
+    )
 
     return True
 
