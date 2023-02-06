@@ -47,8 +47,8 @@ Results are shown [on the Wiki](https://github.com/woctezuma/steam-tag-mapping/w
 
 <!-- Definitions -->
 
-[build]: <https://travis-ci.org/woctezuma/steam-tag-mapping>
-[build-image]: <https://travis-ci.org/woctezuma/steam-tag-mapping.svg?branch=master>
+[build]: <https://github.com/woctezuma/steam-tag-mapping/actions>
+[build-image]: <https://github.com/woctezuma/steam-tag-mapping/workflows/Python package/badge.svg?branch=master>
 
 [pyup]: <https://pyup.io/repos/github/woctezuma/steam-tag-mapping/>
 [dependency-image]: <https://pyup.io/repos/github/woctezuma/steam-tag-mapping/shield.svg>
