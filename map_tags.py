@@ -33,7 +33,7 @@ def display_tags_containing_specific_word(tags, word_to_search='rogue'):
 
 def filter_chosen_tags(chosen_tags_set, tags):
     for tag in chosen_tags_set.difference(tags):
-        print('Tag {} is not used for any game.'.format(tag))
+        print(f'Tag {tag} is not used for any game.')
 
     chosen_tags_set = chosen_tags_set.intersection(tags)
 
@@ -60,7 +60,7 @@ def get_adjacency_matrix(data, tags):
         tags_adjacency_matrix = np.zeros([num_tags, num_tags])
         tags_counter = np.zeros(num_tags)
 
-        for appid in data.keys():
+        for appid in data:
             current_tags = list(data[appid])
 
             for index_i in range(len(current_tags)):
@@ -204,10 +204,7 @@ def plot_embedding(X, str_list, chosen_tags_set, title=None, delta_font=0.003):
             vertical_alignment = 'top'
             y = y - delta_font
 
-        if label in chosen_tags_set:
-            my_color = 'red'
-        else:
-            my_color = 'black'
+        my_color = 'red' if label in chosen_tags_set else 'black'
 
         my_font_size = 'medium'
         my_weight = 'normal'
@@ -278,7 +275,7 @@ def optimize_display(
         prct -= 1
     prct -= 1
     low_q = np.percentile(tags_counter, prct)
-    print('Low percentile for {}'.format(prct))
+    print(f'Low percentile for {prct}')
 
     prct = 90
     while np.percentile(tags_counter, prct) < np.max(
@@ -291,7 +288,7 @@ def optimize_display(
         prct += 1
     prct += 1
     high_q = np.percentile(tags_counter, prct)
-    print('High percentile for {}'.format(prct))
+    print(f'High percentile for {prct}')
 
     common_tags = [v[0] for v in tags_statistics if bool(v[1] <= low_q)]
     rare_tags = [v[0] for v in tags_statistics if bool(v[1] >= high_q)]
@@ -329,12 +326,12 @@ def generate_steam_spy_data_with_tags(tags_dict):
     # Create a set of all Steam appIDs
 
     app_ids = set()
-    for tag in tags_dict.keys():
+    for tag in tags_dict:
         tagged_app_ids = tags_dict[tag]
         app_ids.update(tagged_app_ids)
 
     num_games = len(app_ids)
-    print('#games = {}'.format(num_games))
+    print(f'#games = {num_games}')
 
     # Create a set of all Steam tags, sorted in lexicographical order
 
@@ -342,9 +339,9 @@ def generate_steam_spy_data_with_tags(tags_dict):
     tags = sorted(tags)  # only for display
 
     num_tags = len(tags)
-    print('#tags = {}'.format(num_tags))
+    print(f'#tags = {num_tags}')
 
-    data = dict()
+    data = {}
 
     for app_id in app_ids:
         current_tags = [
